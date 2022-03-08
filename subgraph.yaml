@@ -54,7 +54,7 @@ dataSources:
         - function: withdrawETH(address,uint256,address)
           handler: handleWithdrawETH
         - function: repayETH(address,uint256,uint256,address)
-          handler: handleRepayETH#
+          handler: handleRepayETH
         - function: borrowETH(address,uint256,uint256,uint16)
           handler: handleBorrowETH
       file: ./src/mapping.ts
