@@ -20,10 +20,11 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Token
+        - RewardToken
       abis:
         - name: GeistToken
           file: ./abis/GeistToken.json
-      callHandlers:
-        - function: approve(address,uint256)
+      eventHandlers:
+        - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
       file: ./src/mapping.ts

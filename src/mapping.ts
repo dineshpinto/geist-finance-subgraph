@@ -1,22 +1,10 @@
-import { BigInt } from "@graphprotocol/graph-ts"
-import {
-  GeistToken,
-  Approval,
-  Transfer
-} from "../generated/GeistToken/GeistToken"
-import { Token } from "../generated/schema"
+import { Approval } from "../generated/GeistToken/GeistToken"
+import { TOKEN_ADDRESS, REWARD_TOKEN_ADDRESS } from "./constants";
+import { getTokenInfo, getRewardTokenInfo } from './helpers';
+import { Token, RewardToken } from "../generated/schema"
+
 
 export function handleApproval(event: Approval): void {
-  let token = Token.load(event.params.owner.toString());
-
-  if (!token) {
-    token = new Token(event.params.owner.toString());
-  }
-
-  let tokenContract = GeistToken.bind(event.params.owner);
-
-  token.id = event.params.owner.toString();
-  token.decimals = tokenContract.decimals().toU32();
-  token.name = tokenContract.name();
-  token.symbol = tokenContract.symbol();
+  let token: Token = getTokenInfo(TOKEN_ADDRESS);
+  let rewardToken: RewardToken = getRewardTokenInfo(REWARD_TOKEN_ADDRESS, "DEPOSIT");
 }
