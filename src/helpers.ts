@@ -1,12 +1,23 @@
-import { BigDecimal, BigInt, Address } from '@graphprotocol/graph-ts'
 import {
-    GeistToken as TokenContract,
-    Approval,
-  } from "../generated/GeistToken/GeistToken"
+    Address, 
+    Entity, 
+    Value,
+    ValueKind,
+    store
+} from '@graphprotocol/graph-ts'
 
-import { TOKEN_ADDRESS, TOKEN_NAME, TOKEN_DECIMALS, TOKEN_SYMBOL, REWARD_TOKEN_NAME, 
-    REWARD_TOKEN_DECIMALS, REWARD_TOKEN_SYMBOL, REWARD_TOKEN_ADDRESS } from "./constants";
+import { GeistToken as TokenContract } from "../generated/GeistToken/GeistToken"
+
+import { 
+    TOKEN_NAME, 
+    TOKEN_DECIMALS, 
+    REWARD_TOKEN_NAME, 
+    REWARD_TOKEN_DECIMALS, 
+    REWARD_TOKEN_SYMBOL, 
+} from "./constants";
+
 import { Token, RewardToken } from "../generated/schema"
+
 
 export function getTokenInfo(address: Address): Token {
     let token = Token.load(address.toHexString());
@@ -49,4 +60,33 @@ export function getRewardTokenInfo(address: Address, type: string): RewardToken 
     rewardToken.save()
   
     return rewardToken;
+}
+
+export class Users extends Entity {
+    constructor(userId: string) {
+        super();
+        this.set("userId", Value.fromString(userId))
+    }
+
+    save(): void {
+        let userId = this.get("userId");
+        assert(
+            userId != null,
+          "Cannot save Users entity without an ID"
+        );
+        if (userId) {
+          assert(
+            userId.kind == ValueKind.STRING,
+            "Cannot save Users entity with non-string ID. " +
+              'Considering using .toHex() to convert the "id" to a string.'
+          );
+          store.set("Users", userId.toString(), this);
+        }
+      }
+
+    static load(userId: string): Users | null {
+        return changetype<Users | null>(
+            store.get("Users", userId)
+        );
+    }
 }
