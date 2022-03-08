@@ -41,7 +41,7 @@ export function getTokenInfo(address: Address): Token {
     return token;
 }
 
-export function getRewardTokenInfo(address: Address, type: string): RewardToken {
+export function getRewardTokenInfo(address: Address, rewardType: string): RewardToken {
     let rewardToken = RewardToken.load(address.toHexString());
        
     if (rewardToken) {
@@ -55,7 +55,7 @@ export function getRewardTokenInfo(address: Address, type: string): RewardToken 
     rewardToken.decimals = tokenContract.try_decimals().reverted ? REWARD_TOKEN_DECIMALS: tokenContract.try_decimals().value.toI32();
     rewardToken.name = tokenContract.try_name().reverted ? REWARD_TOKEN_NAME: tokenContract.try_name().value.toString();
     rewardToken.symbol = tokenContract.try_symbol().reverted ? REWARD_TOKEN_SYMBOL: tokenContract.try_symbol().value.toString();
-    rewardToken.type = type;
+    rewardToken.type = rewardType;
     
     rewardToken.save()
   
