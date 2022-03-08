@@ -1,0 +1,29 @@
+specVersion: 0.0.2
+description: Geist Finance Subgraph
+repository: https://github.com/dineshpinto/geist-finance-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  # --------------------------------------
+  #      Token
+  # --------------------------------------
+  - kind: ethereum/contract
+    name: GeistToken
+    network: fantom 
+    source:
+      address: "0xd8321AA83Fb0a4ECd6348D4577431310A6E0814d"
+      startBlock: 32862727
+      abi: GeistToken
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Token
+      abis:
+        - name: GeistToken
+          file: ./abis/GeistToken.json
+      callHandlers:
+        - function: approve(address,uint256)
+          handler: handleApproval
+      file: ./src/mapping.ts

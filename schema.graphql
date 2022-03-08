@@ -1,0 +1,34 @@
+enum Network {
+  AVALANCHE
+  AURORA
+  BSC
+  CELO
+  CRONOS
+  ETHEREUM
+  FANTOM
+  HARMONY
+  MOONBEAM
+  MOONRIVER
+  OPTIMISM
+  POLYGON
+  XDAI
+}
+
+enum ProtocolType {
+  EXCHANGE
+  LENDING
+  YIELD
+  BRIDGE
+  GENERIC
+  # Will add more
+}
+
+type Token @entity {
+  " Smart contract address of the market "
+  id: ID!
+
+  " Mirrored from the smart contract "
+  name: String!
+  symbol: String!
+  decimals: Int!
+}
