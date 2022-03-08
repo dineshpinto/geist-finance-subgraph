@@ -28,3 +28,30 @@ dataSources:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
       file: ./src/mapping.ts
+  - kind: ethereum/contract
+    name: WETHGateway
+    network: fantom
+    source:
+      address: "0x47102245FEa0F8D35a6b28E54505e9FfD83d0704"
+      startBlock: 32862727
+      abi: WETHGateway
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - UsageMetricsDailySnapshot
+        - FinancialsDailySnapshot
+      abis:
+        - name: WETHGateway
+          file: ./abis/WETHGateway.json
+      callHandlers:
+        - function: depositETH(address,address,uint16)
+          handler: handleDepositETH
+        - function: withdrawETH(address,uint256,address)
+          handler: handleWithdrawETH
+        - function: repayETH(address,uint256,uint256,address)
+          handler: handleRepayETH#
+        - function: borrowETH(address,uint256,uint256,uint16)
+          handler: handleBorrowETH
+      file: ./src/mapping.ts
