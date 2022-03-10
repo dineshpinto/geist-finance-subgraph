@@ -58,6 +58,12 @@ export function handleApproval(event: Approval): void {
   }
 }
 
+// Definitions
+// totalValueLockedUSD = staking + deposits
+// totalVolumeUSD = deposit + staking + repay + withdraw
+// supplySideRevenueUSD = rewards paid to depositors
+// protocolSideRevenueUSD = fees
+
 export function handleDepositETH(call: DepositETHCall): void {
   // Extract user metrics from depositing ETH, ignores non-unique addresses
   let usageMetrics: UsageMetricsDailySnapshot = 
@@ -77,7 +83,6 @@ export function handleDepositETH(call: DepositETHCall): void {
 
   financialsDailySnapshot.timestamp = call.block.timestamp;
   financialsDailySnapshot.blockNumber = call.block.number;
-  financialsDailySnapshot.protocol = "geist";
   financialsDailySnapshot.save()
 }
 
@@ -98,9 +103,7 @@ export function handleBorrowETH(call: BorrowETHCall): void {
     false
   );
 
-  financialsDailySnapshot.timestamp = call.block.timestamp;
   financialsDailySnapshot.blockNumber = call.block.number;
-  financialsDailySnapshot.protocol = "geist";
   financialsDailySnapshot.save()
 }
 
@@ -121,9 +124,7 @@ export function handleRepayETH(call: RepayETHCall): void {
     false
   );
 
-  financialsDailySnapshot.timestamp = call.block.timestamp;
   financialsDailySnapshot.blockNumber = call.block.number;
-  financialsDailySnapshot.protocol = "geist";
   financialsDailySnapshot.save()
 }
 
@@ -144,9 +145,7 @@ export function handleWithdrawETH(call: WithdrawETHCall): void {
     false
   );
 
-  financialsDailySnapshot.timestamp = call.block.timestamp;
   financialsDailySnapshot.blockNumber = call.block.number;
-  financialsDailySnapshot.protocol = "geist";
   financialsDailySnapshot.save()
 }
 
@@ -162,13 +161,7 @@ export function handleRewardPaid(event: RewardPaid): void {
     false
   );
 
-  financialsDailySnapshot.timestamp = event.block.timestamp;
   financialsDailySnapshot.blockNumber = event.block.number;
-  financialsDailySnapshot.protocol = "geist";
   financialsDailySnapshot.save();
 }
 
-// totalValueLockedUSD = staking + deposits
-// totalVolumeUSD = deposit + staking + repay + withdraw
-// supplySideRevenueUSD = rewards paid to depositors
-// protocolSideRevenueUSD = fees

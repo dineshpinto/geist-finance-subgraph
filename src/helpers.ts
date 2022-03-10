@@ -165,6 +165,8 @@ export function getUsageMetrics(
         financialsDailySnapshot.supplySideRevenueUSD.plus(tokenAmountUSD);
     }
     financialsDailySnapshot.totalVolumeUSD.plus(tokenAmountUSD);
+    financialsDailySnapshot.timestamp = timestamp;
+    financialsDailySnapshot.protocol = TOKEN_NAME_GEIST;
 
     return financialsDailySnapshot;
   }
