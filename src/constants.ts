@@ -1,7 +1,7 @@
 import { 
     BigInt, 
     BigDecimal, 
-    Address 
+    Address
 } from "@graphprotocol/graph-ts";
 
 

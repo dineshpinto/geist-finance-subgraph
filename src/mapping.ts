@@ -30,7 +30,7 @@ export function handleApproval(event: Approval): void {
   let token: Token = getTokenInfo(TOKEN_ADDRESS);
 
   // Set rewardType of token to DEPOSIT
-  let rewardToken: RewardToken = getRewardTokenInfo(REWARD_TOKEN_ADDRESS);
+  let rewardToken: RewardToken = getRewardTokenInfo(REWARD_TOKEN_ADDRESS, "DEPOSIT");
 }
 
 export function handleDepositETH(call: DepositETHCall): void {
