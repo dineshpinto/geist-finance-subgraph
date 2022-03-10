@@ -41,9 +41,6 @@ export function getTokenInfo(address: Address): Token {
                  TOKEN_NAME: tokenContract.try_name().value.toString();
     token.symbol = tokenContract.try_name().reverted ? 
                    TOKEN_NAME: tokenContract.try_name().value.toString();
-
-    token.save()
-  
     return token;
 }
 
@@ -64,9 +61,7 @@ export function getRewardTokenInfo(address: Address, rewardType: string): Reward
                        REWARD_TOKEN_NAME: tokenContract.try_name().value.toString();
     rewardToken.symbol = tokenContract.try_symbol().reverted ? 
                          REWARD_TOKEN_SYMBOL: tokenContract.try_symbol().value.toString();
-    rewardToken.type = rewardType;
-    rewardToken.save()
-  
+    rewardToken.type = rewardType;  
     return rewardToken;
 }
 
@@ -114,9 +109,8 @@ export function handleInteraction(
     usageMetrics.timestamp = timestamp;
   
     userExists.save();
-    usageMetrics.save();
 
     return usageMetrics;
   }
 
-  
+

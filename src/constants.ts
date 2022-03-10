@@ -19,9 +19,10 @@ export const REWARD_TOKEN_DECIMALS: i32 = 18;
 export const REWARD_TOKEN_NAME: string = "Geist.Finance Protocol Token"; 
 export const REWARD_TOKEN_SYMBOL: string = "GEIST";
 
+// Token contract can be used to get addresses of all reward tokens
 export const REWARD_TOKEN_CONTRACT = Address.fromString("0x49c93a95dbcc9A6A4D8f77E59c038ce5020e82f8");
 
-// Additional reward tokens
+// Additional reward token addresses (not used but kept anyway)
 export const REWARD_TOKEN_gDAI = Address.fromString("0x07E6332dD090D287d3489245038daF987955DCFB");
 export const REWARD_TOKEN_gETH = Address.fromString("0x25c130B2624CF12A4Ea30143eF50c5D68cEFA22f");
 export const REWARD_TOKEN_gFTM = Address.fromString("0x39B3bd37208CBaDE74D0fcBDBb12D606295b430a");
