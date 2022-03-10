@@ -77,6 +77,9 @@ interface Protocol {
 ###############################
 ##### Protocol Timeseries #####
 ###############################
+type UniqueUsers @entity {
+  id: ID!
+}
 
 type UsageMetricsDailySnapshot @entity {
   " ID is # of days since Unix epoch time "

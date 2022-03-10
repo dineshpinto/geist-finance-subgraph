@@ -1,9 +1,5 @@
 import {
-    Address, 
-    Entity, 
-    Value,
-    ValueKind,
-    store,
+    Address,
     BigInt
 } from '@graphprotocol/graph-ts'
 
@@ -14,10 +10,16 @@ import {
     TOKEN_DECIMALS, 
     REWARD_TOKEN_NAME, 
     REWARD_TOKEN_DECIMALS, 
-    REWARD_TOKEN_SYMBOL, 
+    REWARD_TOKEN_SYMBOL,
 } from "./constants";
 
-import { Token, RewardToken, UsageMetricsDailySnapshot } from "../generated/schema"
+import { 
+    Token, 
+    RewardToken, 
+    UsageMetricsDailySnapshot, 
+    UniqueUsers,
+    FinancialsDailySnapshot
+} from "../generated/schema"
 
 
 export function getTokenInfo(address: Address): Token {
@@ -45,7 +47,7 @@ export function getTokenInfo(address: Address): Token {
     return token;
 }
 
-export function getRewardTokenInfo(address: Address): RewardToken {
+export function getRewardTokenInfo(address: Address, rewardType: string): RewardToken {
     let rewardToken = RewardToken.load(address.toHexString());
        
     if (rewardToken) {
@@ -62,41 +64,11 @@ export function getRewardTokenInfo(address: Address): RewardToken {
                        REWARD_TOKEN_NAME: tokenContract.try_name().value.toString();
     rewardToken.symbol = tokenContract.try_symbol().reverted ? 
                          REWARD_TOKEN_SYMBOL: tokenContract.try_symbol().value.toString();
-    rewardToken.type = "DEPOSIT";
+    rewardToken.type = rewardType;
     rewardToken.save()
   
     return rewardToken;
 }
-
-export class Users extends Entity {
-    constructor(userId: string) {
-        super();
-        this.set("userId", Value.fromString(userId))
-    }
-
-    save(): void {
-        let userId = this.get("userId");
-        assert(
-            userId != null,
-          "Cannot save Users entity without an ID"
-        );
-        if (userId) {
-          assert(
-            userId.kind == ValueKind.STRING,
-            "Cannot save Users entity with non-string ID. " +
-              'Considering using .toHex() to convert the "id" to a string.'
-          );
-          store.set("Users", userId.toString(), this);
-        }
-      }
-
-    static load(userId: string): Users | null {
-        return changetype<Users | null>(
-            store.get("Users", userId)
-        );
-    }
-}
-
 
 export function handleInteraction(
     block_number: BigInt, 
@@ -114,18 +86,21 @@ export function handleInteraction(
     // If the id does not exist, create it and reset values
     if (!usageMetrics) {
       usageMetrics = new UsageMetricsDailySnapshot(id.toString());
+      usageMetrics.id = id.toString();
       usageMetrics.activeUsers = 0;
       usageMetrics.totalUniqueUsers = 0;
       usageMetrics.dailyTransactionCount = 0;
     }
   
     // Combine the id and the user address to generate a unique user id for the day
-    let userId: string = id.toString() + from.toString()
-    let userExists = Users.load(userId);
+    let userId: string = id.toString() + from.toHexString()
+    let userExists = UniqueUsers.load(userId);
   
     // If the user id does not already exist in the store, add to unique users
     if (!userExists) {
-      userExists = new Users(userId);
+      userExists = new UniqueUsers(userId);
+      userExists.id = userId;
+
       usageMetrics.activeUsers += 1;
       usageMetrics.totalUniqueUsers += 1;
     }
