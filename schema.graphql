@@ -110,7 +110,7 @@ type FinancialsDailySnapshot @entity {
 
   totalValueLockedUSD: BigDecimal!
 
-  " Total volume in USD "
+  " Total volume in USD "#
   totalVolumeUSD: BigDecimal!
 
   " Revenue claimed by suppliers to the protocol. LPs on DEXs (e.g. 2.5% of the swap fee in Sushiswap). Depositors on Lending Protocols. NFT sellers on OpenSea. "

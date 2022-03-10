@@ -19,11 +19,14 @@ dataSources:
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
+        - Protocol
         - Token
         - RewardToken
       abis:
         - name: GeistToken
           file: ./abis/GeistToken.json
+        - name: MultiFeeDistribution
+          file: ./abis/MultiFeeDistribution.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval

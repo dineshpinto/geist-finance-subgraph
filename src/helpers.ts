@@ -18,7 +18,7 @@ import {
     RewardToken, 
     UsageMetricsDailySnapshot, 
     UniqueUsers,
-    FinancialsDailySnapshot
+    FinancialsDailySnapshot,
 } from "../generated/schema"
 
 
@@ -118,3 +118,5 @@ export function handleInteraction(
 
     return usageMetrics;
   }
+
+  
