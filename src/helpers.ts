@@ -1,17 +1,9 @@
 import {
     Address,
-    BigInt
+    BigInt,
 } from '@graphprotocol/graph-ts'
 
 import { GeistToken as TokenContract } from "../generated/GeistToken/GeistToken"
-
-import { 
-    TOKEN_NAME, 
-    TOKEN_DECIMALS, 
-    REWARD_TOKEN_NAME, 
-    REWARD_TOKEN_DECIMALS, 
-    REWARD_TOKEN_SYMBOL,
-} from "./constants";
 
 import { 
     Token, 
@@ -21,6 +13,19 @@ import {
     FinancialsDailySnapshot,
 } from "../generated/schema"
 
+import { 
+    TOKEN_NAME_GEIST, 
+    TOKEN_DECIMALS_GEIST, 
+    REWARD_TOKEN_NAME, 
+    REWARD_TOKEN_DECIMALS, 
+    REWARD_TOKEN_SYMBOL,
+    ZERO_BD,
+} from "./constants";
+
+import { 
+    convertTokenToDecimal,
+    getTokenPrice
+} from "./utils";
 
 export function getTokenInfo(address: Address): Token {
     let token = Token.load(address.toHexString());
@@ -36,11 +41,11 @@ export function getTokenInfo(address: Address): Token {
 
     token.id = address.toHexString();
     token.decimals = tokenContract.try_decimals().reverted ? 
-                     TOKEN_DECIMALS: tokenContract.try_decimals().value.toI32();
+                     TOKEN_DECIMALS_GEIST: tokenContract.try_decimals().value.toI32();
     token.name = tokenContract.try_name().reverted ? 
-                 TOKEN_NAME: tokenContract.try_name().value.toString();
+                 TOKEN_NAME_GEIST: tokenContract.try_name().value.toString();
     token.symbol = tokenContract.try_name().reverted ? 
-                   TOKEN_NAME: tokenContract.try_name().value.toString();
+                   TOKEN_NAME_GEIST: tokenContract.try_name().value.toString();
     return token;
 }
 
@@ -65,7 +70,7 @@ export function getRewardTokenInfo(address: Address, rewardType: string): Reward
     return rewardToken;
 }
 
-export function handleInteraction(
+export function getUsageMetrics(
     block_number: BigInt, 
     timestamp: BigInt, 
     from: Address
@@ -103,7 +108,7 @@ export function handleInteraction(
     // The protocol is defined in the schema as type Protocol!
     // But doesnt this create a circular dependency?
     // Protocol depends on usageMetrics, and usageMetrics depends on Protocol
-    usageMetrics.protocol = TOKEN_NAME;
+    usageMetrics.protocol = TOKEN_NAME_GEIST;
     usageMetrics.dailyTransactionCount += 1
     usageMetrics.blockNumber = block_number;
     usageMetrics.timestamp = timestamp;
@@ -111,6 +116,51 @@ export function handleInteraction(
     userExists.save();
 
     return usageMetrics;
+  }
+
+  export function getFinancialSnapshot(
+      timestamp: BigInt,
+      tokenAmount: BigInt,
+      tokenAddress: Address,
+      isValueLockedUSD: bool,
+      isIncreasingValueLocked: bool,
+      isSupplySideRevenueUSD: bool,
+      isProtocolSideRevenueUSD: bool
+  ): FinancialsDailySnapshot {
+
+    let id: i64 = timestamp.toI64() / 86400;
+
+    let financialsDailySnapshot = FinancialsDailySnapshot.load(id.toString())
+  
+    if (!financialsDailySnapshot) {
+      financialsDailySnapshot =  new FinancialsDailySnapshot(id.toString());
+      financialsDailySnapshot.id = id.toString();
+      financialsDailySnapshot.totalValueLockedUSD = ZERO_BD;
+      financialsDailySnapshot.totalVolumeUSD = ZERO_BD;
+      financialsDailySnapshot.supplySideRevenueUSD = ZERO_BD;
+      financialsDailySnapshot.protocolSideRevenueUSD = ZERO_BD;
+    }
+
+    let tokenContract = TokenContract.bind(tokenAddress);
+    let tokenAmountBD = convertTokenToDecimal(tokenAmount, tokenContract.try_decimals().value)
+    let tokenPrice = getTokenPrice(tokenAddress);
+    let tokenAmountUSD = tokenPrice.times(tokenAmountBD);
+
+    if (isValueLockedUSD && isIncreasingValueLocked) {
+        financialsDailySnapshot.totalValueLockedUSD.plus(tokenAmountUSD);
+    }
+    else if (isValueLockedUSD && !isIncreasingValueLocked) {
+        financialsDailySnapshot.totalValueLockedUSD.minus(tokenAmountUSD);
+    }
+    if (isProtocolSideRevenueUSD) {
+        financialsDailySnapshot.protocolSideRevenueUSD.plus(tokenAmountUSD);
+    }
+    if (isSupplySideRevenueUSD) {
+        financialsDailySnapshot.supplySideRevenueUSD.plus(tokenAmountUSD);
+    }
+    financialsDailySnapshot.totalVolumeUSD.plus(tokenAmountUSD);
+
+    return financialsDailySnapshot;
   }
 
 

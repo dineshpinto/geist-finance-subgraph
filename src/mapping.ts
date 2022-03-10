@@ -1,8 +1,11 @@
-import { BigInt } from "@graphprotocol/graph-ts";
+import { BigInt, BigDecimal } from "@graphprotocol/graph-ts";
 
 import { Approval } from "../generated/GeistToken/GeistToken"
 
-import { MultiFeeDistribution } from "../generated/GeistToken/MultiFeeDistribution"
+import { 
+  MultiFeeDistribution,
+  RewardPaid
+} from "../generated/GeistToken/MultiFeeDistribution"
 
 import { 
   DepositETHCall, 
@@ -12,26 +15,28 @@ import {
 } from "../generated/WETHGateway/WETHGateway"
 
 import { 
-  TOKEN_ADDRESS,
+  Token,
+  RewardToken,
+  UsageMetricsDailySnapshot,
+  FinancialsDailySnapshot
+} from "../generated/schema"
+
+import { 
+  TOKEN_ADDRESS_GEIST,
   REWARD_TOKEN_CONTRACT,
+  TOKEN_ADDRESS_gETH
 } from "./constants";
 
 import { 
   getTokenInfo, 
   getRewardTokenInfo,
-  handleInteraction,
+  getUsageMetrics,
+  getFinancialSnapshot
 } from './helpers';
-
-import { 
-  Token,
-  RewardToken,
-  UsageMetricsDailySnapshot
-} from "../generated/schema"
-
 
 export function handleApproval(event: Approval): void {
   // Add main token into Token store
-  let token : Token = getTokenInfo(TOKEN_ADDRESS);
+  let token : Token = getTokenInfo(TOKEN_ADDRESS_GEIST);
   token.save()
 
   // Use the Reward Token contract to pull all the reward token addresses
@@ -55,24 +60,106 @@ export function handleApproval(event: Approval): void {
 
 export function handleDepositETH(call: DepositETHCall): void {
   let usageMetrics: UsageMetricsDailySnapshot = 
-        handleInteraction(call.block.number, call.block.timestamp, call.from);
+        getUsageMetrics(call.block.number, call.block.timestamp, call.from);
   usageMetrics.save()
+
+  let financialsDailySnapshot: FinancialsDailySnapshot = getFinancialSnapshot(
+    call.block.timestamp,
+    call.transaction.value,
+    TOKEN_ADDRESS_gETH,
+    true,
+    true,
+    false,
+    false
+  );
+
+  financialsDailySnapshot.timestamp = call.block.timestamp;
+  financialsDailySnapshot.blockNumber = call.block.number;
+  financialsDailySnapshot.protocol = "geist";
+  financialsDailySnapshot.save()
 }
 
 export function handleBorrowETH(call: BorrowETHCall): void {
   let usageMetrics: UsageMetricsDailySnapshot = 
-        handleInteraction(call.block.number, call.block.timestamp, call.from);
+        getUsageMetrics(call.block.number, call.block.timestamp, call.from);
   usageMetrics.save()
+
+  let financialsDailySnapshot: FinancialsDailySnapshot = getFinancialSnapshot(
+    call.block.timestamp,
+    call.inputs.amount,
+    TOKEN_ADDRESS_gETH,
+    false,
+    false,
+    false,
+    false
+  );
+
+  financialsDailySnapshot.timestamp = call.block.timestamp;
+  financialsDailySnapshot.blockNumber = call.block.number;
+  financialsDailySnapshot.protocol = "geist";
+  financialsDailySnapshot.save()
 }
 
 export function handleRepayETH(call: RepayETHCall): void {
   let usageMetrics: UsageMetricsDailySnapshot = 
-        handleInteraction(call.block.number, call.block.timestamp, call.from);
+        getUsageMetrics(call.block.number, call.block.timestamp, call.from);
   usageMetrics.save()
+
+  let financialsDailySnapshot: FinancialsDailySnapshot = getFinancialSnapshot(
+    call.block.timestamp,
+    call.inputs.amount,
+    TOKEN_ADDRESS_gETH,
+    false,
+    false,
+    false,
+    false
+  );
+
+  financialsDailySnapshot.timestamp = call.block.timestamp;
+  financialsDailySnapshot.blockNumber = call.block.number;
+  financialsDailySnapshot.protocol = "geist";
+  financialsDailySnapshot.save()
 }
 
 export function handleWithdrawETH(call: WithdrawETHCall): void {
   let usageMetrics: UsageMetricsDailySnapshot = 
-        handleInteraction(call.block.number, call.block.timestamp, call.from);
+        getUsageMetrics(call.block.number, call.block.timestamp, call.from);
   usageMetrics.save()
+
+  let financialsDailySnapshot: FinancialsDailySnapshot = getFinancialSnapshot(
+    call.block.timestamp,
+    call.inputs.amount,
+    TOKEN_ADDRESS_gETH,
+    true,
+    false,
+    false,
+    false
+  );
+
+  financialsDailySnapshot.timestamp = call.block.timestamp;
+  financialsDailySnapshot.blockNumber = call.block.number;
+  financialsDailySnapshot.protocol = "geist";
+  financialsDailySnapshot.save()
 }
+
+export function handleRewardPaid(event: RewardPaid): void {
+  let financialsDailySnapshot: FinancialsDailySnapshot = getFinancialSnapshot(
+    event.block.timestamp,
+    event.params.reward,
+    event.params.rewardsToken,
+    false,
+    false,
+    true,
+    false
+  );
+
+  financialsDailySnapshot.timestamp = event.block.timestamp;
+  financialsDailySnapshot.blockNumber = event.block.number;
+  financialsDailySnapshot.protocol = "geist";
+  financialsDailySnapshot.save();
+}
+
+// totalValueLockedUSD = staking + deposits
+// totalVolumeUSD = deposit + staking + repay + withdraw
+// supplySideRevenueUSD = rewards paid to depositors
+// protocolSideRevenueUSD = fees
