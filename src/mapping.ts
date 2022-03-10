@@ -1,4 +1,4 @@
-import { BigInt, BigDecimal } from "@graphprotocol/graph-ts";
+import { BigInt } from "@graphprotocol/graph-ts";
 
 import { Approval } from "../generated/GeistToken/GeistToken"
 
@@ -59,10 +59,12 @@ export function handleApproval(event: Approval): void {
 }
 
 export function handleDepositETH(call: DepositETHCall): void {
+  // Extract user metrics from depositing ETH, ignores non-unique addresses
   let usageMetrics: UsageMetricsDailySnapshot = 
         getUsageMetrics(call.block.number, call.block.timestamp, call.from);
   usageMetrics.save()
 
+  // Depositing ETH adds to TVL and volume
   let financialsDailySnapshot: FinancialsDailySnapshot = getFinancialSnapshot(
     call.block.timestamp,
     call.transaction.value,
@@ -80,10 +82,12 @@ export function handleDepositETH(call: DepositETHCall): void {
 }
 
 export function handleBorrowETH(call: BorrowETHCall): void {
+  // Extract user metrics from borrowing ETH, ignores non-unique addresses
   let usageMetrics: UsageMetricsDailySnapshot = 
         getUsageMetrics(call.block.number, call.block.timestamp, call.from);
   usageMetrics.save()
 
+  // Borrowing ETH does not to TVL, but adds to volume
   let financialsDailySnapshot: FinancialsDailySnapshot = getFinancialSnapshot(
     call.block.timestamp,
     call.inputs.amount,
@@ -101,10 +105,12 @@ export function handleBorrowETH(call: BorrowETHCall): void {
 }
 
 export function handleRepayETH(call: RepayETHCall): void {
+  // Extract user metrics from replaying ETH, ignores non-unique addresses
   let usageMetrics: UsageMetricsDailySnapshot = 
         getUsageMetrics(call.block.number, call.block.timestamp, call.from);
   usageMetrics.save()
 
+  // Repaying ETH does not to TVL, but adds to volume
   let financialsDailySnapshot: FinancialsDailySnapshot = getFinancialSnapshot(
     call.block.timestamp,
     call.inputs.amount,
@@ -122,10 +128,12 @@ export function handleRepayETH(call: RepayETHCall): void {
 }
 
 export function handleWithdrawETH(call: WithdrawETHCall): void {
+  // Extract user metrics from withdrawing ETH, ignores non-unique addresses
   let usageMetrics: UsageMetricsDailySnapshot = 
         getUsageMetrics(call.block.number, call.block.timestamp, call.from);
   usageMetrics.save()
 
+  // Borrowing ETH reduces TVL, but adds to volume
   let financialsDailySnapshot: FinancialsDailySnapshot = getFinancialSnapshot(
     call.block.timestamp,
     call.inputs.amount,
@@ -143,6 +151,7 @@ export function handleWithdrawETH(call: WithdrawETHCall): void {
 }
 
 export function handleRewardPaid(event: RewardPaid): void {
+  // Rewards do not to TVL, but adds to volume and supply side revenue
   let financialsDailySnapshot: FinancialsDailySnapshot = getFinancialSnapshot(
     event.block.timestamp,
     event.params.reward,

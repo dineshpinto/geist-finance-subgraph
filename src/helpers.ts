@@ -130,8 +130,10 @@ export function getUsageMetrics(
 
     let id: i64 = timestamp.toI64() / 86400;
 
+    // Refresh id daily, historical snapshots can be accessed by using the id
     let financialsDailySnapshot = FinancialsDailySnapshot.load(id.toString())
   
+    // Initialize all daily snapshot values
     if (!financialsDailySnapshot) {
       financialsDailySnapshot =  new FinancialsDailySnapshot(id.toString());
       financialsDailySnapshot.id = id.toString();
@@ -146,15 +148,19 @@ export function getUsageMetrics(
     let tokenPrice = getTokenPrice(tokenAddress);
     let tokenAmountUSD = tokenPrice.times(tokenAmountBD);
 
+    // Add value locked for operations like depositing
     if (isValueLockedUSD && isIncreasingValueLocked) {
         financialsDailySnapshot.totalValueLockedUSD.plus(tokenAmountUSD);
     }
+    // Subtract value locked for operations like withdrawing
     else if (isValueLockedUSD && !isIncreasingValueLocked) {
         financialsDailySnapshot.totalValueLockedUSD.minus(tokenAmountUSD);
     }
+    // Add protocol revenue for fees
     if (isProtocolSideRevenueUSD) {
         financialsDailySnapshot.protocolSideRevenueUSD.plus(tokenAmountUSD);
     }
+    // Add supply side revenue for rewards
     if (isSupplySideRevenueUSD) {
         financialsDailySnapshot.supplySideRevenueUSD.plus(tokenAmountUSD);
     }
