@@ -1,6 +1,7 @@
 import {
     Address,
     BigInt,
+    BigDecimal
 } from '@graphprotocol/graph-ts'
 
 import { GeistToken as TokenContract } from "../generated/GeistToken/GeistToken"
@@ -118,14 +119,22 @@ export function getUsageMetrics(
     return usageMetrics;
   }
 
+  export function getTokenAmountUSD (tokenAddress: Address, tokenAmount: BigInt): BigDecimal {
+    let tokenContract = TokenContract.bind(tokenAddress);
+    let tokenAmountBD = convertTokenToDecimal(tokenAmount, tokenContract.try_decimals().value)
+    let tokenPrice = getTokenPrice(tokenAddress);
+    let tokenAmountUSD = tokenPrice.times(tokenAmountBD);
+    return tokenAmountUSD
+  }
+
   export function getFinancialSnapshot(
       timestamp: BigInt,
       tokenAmount: BigInt,
       tokenAddress: Address,
-      isValueLockedUSD: bool,
+      isValueLocked: bool,
       isIncreasingValueLocked: bool,
-      isSupplySideRevenueUSD: bool,
-      isProtocolSideRevenueUSD: bool
+      isSupplySideRevenue: bool,
+      isProtocolSideRevenue: bool
   ): FinancialsDailySnapshot {
 
     let id: i64 = timestamp.toI64() / 86400;
@@ -141,27 +150,25 @@ export function getUsageMetrics(
       financialsDailySnapshot.totalVolumeUSD = ZERO_BD;
       financialsDailySnapshot.supplySideRevenueUSD = ZERO_BD;
       financialsDailySnapshot.protocolSideRevenueUSD = ZERO_BD;
+      financialsDailySnapshot.feesUSD = ZERO_BD;
     }
 
-    let tokenContract = TokenContract.bind(tokenAddress);
-    let tokenAmountBD = convertTokenToDecimal(tokenAmount, tokenContract.try_decimals().value)
-    let tokenPrice = getTokenPrice(tokenAddress);
-    let tokenAmountUSD = tokenPrice.times(tokenAmountBD);
+    let tokenAmountUSD = getTokenAmountUSD(tokenAddress, tokenAmount)
 
     // Add value locked for operations like depositing
-    if (isValueLockedUSD && isIncreasingValueLocked) {
+    if (isValueLocked && isIncreasingValueLocked) {
         financialsDailySnapshot.totalValueLockedUSD.plus(tokenAmountUSD);
     }
     // Subtract value locked for operations like withdrawing
-    else if (isValueLockedUSD && !isIncreasingValueLocked) {
+    else if (isValueLocked && !isIncreasingValueLocked) {
         financialsDailySnapshot.totalValueLockedUSD.minus(tokenAmountUSD);
     }
     // Add protocol revenue for fees
-    if (isProtocolSideRevenueUSD) {
+    if (isProtocolSideRevenue) {
         financialsDailySnapshot.protocolSideRevenueUSD.plus(tokenAmountUSD);
     }
     // Add supply side revenue for rewards
-    if (isSupplySideRevenueUSD) {
+    if (isSupplySideRevenue) {
         financialsDailySnapshot.supplySideRevenueUSD.plus(tokenAmountUSD);
     }
     financialsDailySnapshot.totalVolumeUSD.plus(tokenAmountUSD);

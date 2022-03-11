@@ -35,6 +35,7 @@ export function convertTokenToDecimal(tokenAmount: BigInt, decimals: BigInt): Bi
   }
 
 // Hard code the prices in for testing
+// Replace with Price Oracle
 export function getTokenPrice(tokenAddress: Address) : BigDecimal {
     if (tokenAddress == TOKEN_ADDRESS_gfUSDT) {
         return BigDecimal.fromString("1.0")
