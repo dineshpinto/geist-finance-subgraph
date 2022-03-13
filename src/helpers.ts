@@ -119,12 +119,10 @@ export function getUsageMetrics(
     return usageMetrics;
   }
 
-  export function getTokenAmountUSD (tokenAddress: Address, tokenAmount: BigInt): BigDecimal {
-    let tokenContract = TokenContract.bind(tokenAddress);
-    let tokenAmountBD = convertTokenToDecimal(tokenAmount, tokenContract.try_decimals().value)
+  export function getTokenAmountUSD(tokenAddress: Address, tokenAmount: BigInt): BigDecimal {
     let tokenPrice = getTokenPrice(tokenAddress);
-    let tokenAmountUSD = tokenPrice.times(tokenAmountBD);
-    return tokenAmountUSD
+    let tokenAmountUSDBD = tokenPrice.times(tokenAmount).toBigDecimal();
+    return tokenAmountUSDBD
   }
 
   export function getFinancialSnapshot(

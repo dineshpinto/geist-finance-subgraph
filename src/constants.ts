@@ -32,6 +32,21 @@ export const TOKEN_ADDRESS_gCRV = Address.fromString("0x690754A168B022331cAA2467
 export const TOKEN_ADDRESS_gMIM = Address.fromString("0xc664Fc7b8487a3E10824Cda768c1d239F2403bBe");
 export const TOKEN_ADDRESS_gLINK = Address.fromString("0xBeCF29265B0cc8D33fA24446599955C7bcF7F73B");
 
+// Token contracts used to query oracle as proxies for reward tokens
+// This is done as the Oracle does not accept reward token address
+export const TOKEN_ADDRESS_DAI = Address.fromString("0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E");
+export const TOKEN_ADDRESS_ETH = Address.fromString("0x74b23882a30290451A17c44f4F05243b6b58C76d");
+export const TOKEN_ADDRESS_WFTM = Address.fromString("0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83");
+export const TOKEN_ADDRESS_BTC = Address.fromString("0x321162Cd933E2Be498Cd2267a90534A804051b11");
+export const TOKEN_ADDRESS_fUSDT = Address.fromString("0x049d68029688eAbF473097a2fC38ef61633A3C7A");
+export const TOKEN_ADDRESS_USDC = Address.fromString("0x04068DA6C83AFCFA0e13ba15A6696662335D5B75");
+export const TOKEN_ADDRESS_CRV = Address.fromString("0x1E4F97b9f9F913c46F1632781732927B9019C68b");
+export const TOKEN_ADDRESS_MIM = Address.fromString("0x82f0B8B456c1A451378467398982d4834b6829c1");
+export const TOKEN_ADDRESS_LINK = Address.fromString("0xb3654dc3D10Ea7645f8319668E8F54d2574FBdC8");
+
+// Aave price oracle
+export const PRICE_ORACLE = Address.fromString("0xC466e3FeE82C6bdc2E17f2eaF2c6F1E91AD10FD3");
+
 // BigInt 0 and 1
 export let ZERO_BI = BigInt.fromI32(0)
 export let ONE_BI = BigInt.fromI32(1)

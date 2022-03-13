@@ -7,6 +7,7 @@ import {
 import { 
     ZERO_BI, 
     ONE_BI,
+    PRICE_ORACLE,
     TOKEN_ADDRESS_GEIST,
     TOKEN_ADDRESS_gFTM,
     TOKEN_ADDRESS_gCRV,
@@ -16,8 +17,19 @@ import {
     TOKEN_ADDRESS_gLINK,
     TOKEN_ADDRESS_gUSDC,
     TOKEN_ADDRESS_gWBTC,
-    TOKEN_ADDRESS_gfUSDT
+    TOKEN_ADDRESS_gfUSDT,
+    TOKEN_ADDRESS_DAI,
+    TOKEN_ADDRESS_WFTM,
+    TOKEN_ADDRESS_CRV,
+    TOKEN_ADDRESS_ETH,
+    TOKEN_ADDRESS_MIM,
+    TOKEN_ADDRESS_LINK,
+    TOKEN_ADDRESS_USDC,
+    TOKEN_ADDRESS_BTC,
+    TOKEN_ADDRESS_fUSDT
 } from "./constants"
+
+import { AaveOracle } from "../generated/MultiFeeDistribution/AaveOracle"
 
 export function exponentToBigDecimal(decimals: BigInt): BigDecimal {
     let bd = BigDecimal.fromString('1')
@@ -36,38 +48,41 @@ export function convertTokenToDecimal(tokenAmount: BigInt, decimals: BigInt): Bi
 
 // Hard code the prices in for testing
 // Replace with Price Oracle
-export function getTokenPrice(tokenAddress: Address) : BigDecimal {
+export function getTokenPrice(tokenAddress: Address) : BigInt {
+    let priceOracle = AaveOracle.bind(PRICE_ORACLE);
+
     if (tokenAddress == TOKEN_ADDRESS_gfUSDT) {
-        return BigDecimal.fromString("1.0")
+        return priceOracle.getAssetPrice(TOKEN_ADDRESS_fUSDT);
     }
     else if (tokenAddress == TOKEN_ADDRESS_gUSDC) {
-        return BigDecimal.fromString("1.0")
+        return priceOracle.getAssetPrice(TOKEN_ADDRESS_USDC);
     }
     else if (tokenAddress == TOKEN_ADDRESS_gDAI) {
-        return BigDecimal.fromString("1.0")
+        return priceOracle.getAssetPrice(TOKEN_ADDRESS_DAI);
     }
     else if (tokenAddress == TOKEN_ADDRESS_gMIM) {
-        return BigDecimal.fromString("1.0")
+        return priceOracle.getAssetPrice(TOKEN_ADDRESS_MIM);
     }
     else if (tokenAddress == TOKEN_ADDRESS_GEIST) {
-        return BigDecimal.fromString("0.14")
+        // TODO: Fix this with value from an oracle
+        return BigInt.fromString("0.1");
     }
     else if (tokenAddress == TOKEN_ADDRESS_gWBTC) {
-        return BigDecimal.fromString("40000.0")
+        return priceOracle.getAssetPrice(TOKEN_ADDRESS_BTC);
     }
     else if (tokenAddress == TOKEN_ADDRESS_gLINK) {
-        return BigDecimal.fromString("15.0")
+        return priceOracle.getAssetPrice(TOKEN_ADDRESS_LINK);
     }
     else if (tokenAddress == TOKEN_ADDRESS_gCRV) {
-        return BigDecimal.fromString("2.0")
+        return priceOracle.getAssetPrice(TOKEN_ADDRESS_CRV);
     }
     else if (tokenAddress == TOKEN_ADDRESS_gETH) {
-        return BigDecimal.fromString("3000.0")
+        return priceOracle.getAssetPrice(TOKEN_ADDRESS_ETH);
     }
     else if (tokenAddress == TOKEN_ADDRESS_gFTM) {
-        return BigDecimal.fromString("1.5")
+        return priceOracle.getAssetPrice(TOKEN_ADDRESS_WFTM);
     }
     else {
-        return BigDecimal.fromString("0.0")
+        return BigInt.fromI32(0);
     }
 }
