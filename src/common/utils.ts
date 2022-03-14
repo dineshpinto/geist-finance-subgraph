@@ -50,6 +50,9 @@ export function convertTokenToDecimal(tokenAmount: BigInt, decimals: BigInt): Bi
   }
 
 export function getTokenPrice(tokenAddress: Address) : BigInt {
+    // The price oracle only supports a limited number of tokens
+    // So map the gTokens to the underlying asset for price
+    // 
     let priceOracle = AaveOracle.bind(PRICE_ORACLE);
 
     if (tokenAddress == TOKEN_ADDRESS_gfUSDT) {
@@ -61,11 +64,11 @@ export function getTokenPrice(tokenAddress: Address) : BigInt {
     else if (tokenAddress == TOKEN_ADDRESS_gDAI) {
         return priceOracle.getAssetPrice(TOKEN_ADDRESS_DAI);
     }
-    else if (tokenAddress == TOKEN_ADDRESS_gMIM) {
+    else if (tokenAddress == TOKEN_ADDRESS_gMIM) {    
         return priceOracle.getAssetPrice(TOKEN_ADDRESS_MIM);
     }
     else if (tokenAddress == TOKEN_ADDRESS_GEIST) {
-        // TODO: Fix this with value from an oracle
+        // TODO: Fix this with value from a SpookySwap
         return BigInt.fromString("0.15");
     }
     else if (tokenAddress == TOKEN_ADDRESS_gWBTC) {

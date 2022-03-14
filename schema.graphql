@@ -275,7 +275,7 @@ type Market @entity {
   id: ID!
 
   " The protocol this pool belongs to "
-  protocol: Protocol!
+  protocol: LendingProtocol!
 
   # Generally protocols accept one or multiple tokens and mint tokens to the depositor to track ownership
   # Some protocols reward DAO tokens or other incentivisation tokens to holders of LP tokens

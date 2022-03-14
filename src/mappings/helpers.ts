@@ -7,11 +7,11 @@ import {
 import { GeistToken as TokenContract } from "../../generated/GeistToken/GeistToken"
 
 import { 
-    Token, 
-    RewardToken, 
-    UsageMetricsDailySnapshot, 
-    UniqueUsers,
-    FinancialsDailySnapshot,
+    Token as TokenEntity, 
+    RewardToken as RewardTokenEntity, 
+    UsageMetricsDailySnapshot as UsageMetricsDailySnapshotEntity, 
+    UniqueUsers as UniqueUsersEntity,
+    FinancialsDailySnapshot as FinancialsDailySnapshotEntity,
 } from "../../generated/schema"
 
 import { 
@@ -31,14 +31,14 @@ import {
     getTokenPrice
 } from "../common/utils";
 
-export function getTokenInfo(address: Address): Token {
-    let token = Token.load(address.toHexString());
+export function initializeToken(address: Address): TokenEntity {
+    let token = TokenEntity.load(address.toHexString());
 
     if (token) {
         return token;
     }
 
-    token = new Token(address.toHexString());
+    token = new TokenEntity(address.toHexString());
 
     // Replace GeistToken contract with default ERC20?
     let tokenContract = TokenContract.bind(address);
@@ -50,17 +50,18 @@ export function getTokenInfo(address: Address): Token {
                  TOKEN_NAME_GEIST: tokenContract.try_name().value.toString();
     token.symbol = tokenContract.try_name().reverted ? 
                    TOKEN_NAME_GEIST: tokenContract.try_name().value.toString();
+    token.save();
     return token;
 }
 
-export function getRewardTokenInfo(address: Address, rewardType: string): RewardToken {
-    let rewardToken = RewardToken.load(address.toHexString());
+export function initializeRewardToken(address: Address, rewardType: string): RewardTokenEntity {
+    let rewardToken = RewardTokenEntity.load(address.toHexString());
        
     if (rewardToken) {
         return rewardToken;
     }
 
-    rewardToken = new RewardToken(address.toHexString());
+    rewardToken = new RewardTokenEntity(address.toHexString());
 
     let tokenContract = TokenContract.bind(address);
     rewardToken.id = address.toHexString();
@@ -70,7 +71,8 @@ export function getRewardTokenInfo(address: Address, rewardType: string): Reward
                        REWARD_TOKEN_NAME: tokenContract.try_name().value.toString();
     rewardToken.symbol = tokenContract.try_symbol().reverted ? 
                          REWARD_TOKEN_SYMBOL: tokenContract.try_symbol().value.toString();
-    rewardToken.type = rewardType;  
+    rewardToken.type = rewardType;
+    rewardToken.save();
     return rewardToken;
 }
 
@@ -78,18 +80,18 @@ export function getUsageMetrics(
     block_number: BigInt, 
     timestamp: BigInt, 
     from: Address
-    ): UsageMetricsDailySnapshot {
+    ): UsageMetricsDailySnapshotEntity {
     // Number of days since Unix epoch
     // Note: This is an unsafe cast to int, this should be handled better, 
     // perhaps some additional rounding logic
     let id: i64 = timestamp.toI64() / SECONDS_PER_DAY;
   
     // Check if the id (i.e. the day) exists in the store
-    let usageMetrics = UsageMetricsDailySnapshot.load(id.toString());
+    let usageMetrics = UsageMetricsDailySnapshotEntity.load(id.toString());
   
     // If the id does not exist, create it and reset values
     if (!usageMetrics) {
-      usageMetrics = new UsageMetricsDailySnapshot(id.toString());
+      usageMetrics = new UsageMetricsDailySnapshotEntity(id.toString());
       usageMetrics.id = id.toString();
       usageMetrics.activeUsers = 0;
       usageMetrics.totalUniqueUsers = 0;
@@ -98,11 +100,11 @@ export function getUsageMetrics(
   
     // Combine the id and the user address to generate a unique user id for the day
     let userId: string = id.toString() + from.toHexString()
-    let userExists = UniqueUsers.load(userId);
+    let userExists = UniqueUsersEntity.load(userId);
   
     // If the user id does not already exist in the store, add to unique users
     if (!userExists) {
-      userExists = new UniqueUsers(userId);
+      userExists = new UniqueUsersEntity(userId);
       userExists.id = userId;
 
       usageMetrics.activeUsers += 1;
@@ -136,16 +138,16 @@ export function getUsageMetrics(
       isIncreasingValueLocked: bool,
       isSupplySideRevenue: bool,
       isProtocolSideRevenue: bool
-  ): FinancialsDailySnapshot {
+  ): FinancialsDailySnapshotEntity {
 
     let id: i64 = timestamp.toI64() / SECONDS_PER_DAY;
 
     // Refresh id daily, historical snapshots can be accessed by using the id
-    let financialsDailySnapshot = FinancialsDailySnapshot.load(id.toString())
+    let financialsDailySnapshot = FinancialsDailySnapshotEntity.load(id.toString())
   
     // Initialize all daily snapshot values
     if (!financialsDailySnapshot) {
-      financialsDailySnapshot =  new FinancialsDailySnapshot(id.toString());
+      financialsDailySnapshot =  new FinancialsDailySnapshotEntity(id.toString());
       financialsDailySnapshot.id = id.toString();
       financialsDailySnapshot.totalValueLockedUSD = ZERO_BD;
       financialsDailySnapshot.totalVolumeUSD = ZERO_BD;
