@@ -1,9 +1,8 @@
 import { 
-    BigInt, 
-    BigDecimal, 
     Address
 } from "@graphprotocol/graph-ts";
 
+// Null address
 export const ADDRESS_ZERO = Address.fromString("0x0000000000000000000000000000000000000000")
 
 // Default address used for token
@@ -46,11 +45,3 @@ export const TOKEN_ADDRESS_LINK = Address.fromString("0xb3654dc3D10Ea7645f831966
 
 // Aave price oracle
 export const PRICE_ORACLE = Address.fromString("0xC466e3FeE82C6bdc2E17f2eaF2c6F1E91AD10FD3");
-
-// BigInt 0 and 1
-export let ZERO_BI = BigInt.fromI32(0)
-export let ONE_BI = BigInt.fromI32(1)
-
-// BigDecimal 0 and 1
-export let ZERO_BD = BigDecimal.fromString("0")
-export let ONE_BD = BigDecimal.fromString("1")

@@ -1,31 +1,38 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 
-import { Approval } from "../generated/GeistToken/GeistToken"
+import { Approval } from "../../generated/GeistToken/GeistToken"
 
 import { 
   MultiFeeDistribution,
   RewardPaid
-} from "../generated/GeistToken/MultiFeeDistribution"
+} from "../../generated/GeistToken/MultiFeeDistribution"
 
 import { 
   DepositETHCall, 
   BorrowETHCall, 
   RepayETHCall, 
   WithdrawETHCall 
-} from "../generated/WETHGateway/WETHGateway"
+} from "../../generated/WETHGateway/WETHGateway"
 
 import { 
   Token,
   RewardToken,
   UsageMetricsDailySnapshot,
-  FinancialsDailySnapshot
-} from "../generated/schema"
+  FinancialsDailySnapshot,
+  LendingProtocol
+} from "../../generated/schema"
 
 import { 
+  PROTOCOL_ID,
+  NETWORK_FANTOM,
+  PROTOCOL_TYPE_LENDING
+} from "../common/constants";
+
+import {
   TOKEN_ADDRESS_GEIST,
   REWARD_TOKEN_CONTRACT,
-  TOKEN_ADDRESS_gETH
-} from "./constants";
+  TOKEN_ADDRESS_gETH,
+} from "../common/addresses"
 
 import { 
   getTokenInfo, 
@@ -64,8 +71,23 @@ export function handleApproval(event: Approval): void {
 // supplySideRevenueUSD = rewards paid to depositors
 // protocolSideRevenueUSD = fees
 
+function createProtocol(): void {
+  let protocol = LendingProtocol.load(PROTOCOL_ID)
+  if (!protocol) {
+    protocol = new LendingProtocol(PROTOCOL_ID)
+    protocol.name = "Geist Finance"
+    protocol.slug = "geist-finance"
+    protocol.network = NETWORK_FANTOM
+    protocol.type = PROTOCOL_TYPE_LENDING
+    protocol.save()
+  }
+}
+
+
 export function handleDepositETH(call: DepositETHCall): void {
   // Extract user metrics from depositing ETH, ignores non-unique addresses
+  createProtocol();
+
   let usageMetrics: UsageMetricsDailySnapshot = 
         getUsageMetrics(call.block.number, call.block.timestamp, call.from);
   usageMetrics.save()
@@ -81,12 +103,15 @@ export function handleDepositETH(call: DepositETHCall): void {
     false
   );
 
+  financialsDailySnapshot.protocol = PROTOCOL_ID;
   financialsDailySnapshot.timestamp = call.block.timestamp;
   financialsDailySnapshot.blockNumber = call.block.number;
   financialsDailySnapshot.save()
 }
 
 export function handleBorrowETH(call: BorrowETHCall): void {
+  createProtocol();
+
   // Extract user metrics from borrowing ETH, ignores non-unique addresses
   let usageMetrics: UsageMetricsDailySnapshot = 
         getUsageMetrics(call.block.number, call.block.timestamp, call.from);
@@ -108,6 +133,9 @@ export function handleBorrowETH(call: BorrowETHCall): void {
 }
 
 export function handleRepayETH(call: RepayETHCall): void {
+  createProtocol();
+
+
   // Extract user metrics from replaying ETH, ignores non-unique addresses
   let usageMetrics: UsageMetricsDailySnapshot = 
         getUsageMetrics(call.block.number, call.block.timestamp, call.from);
@@ -129,6 +157,8 @@ export function handleRepayETH(call: RepayETHCall): void {
 }
 
 export function handleWithdrawETH(call: WithdrawETHCall): void {
+  createProtocol();
+
   // Extract user metrics from withdrawing ETH, ignores non-unique addresses
   let usageMetrics: UsageMetricsDailySnapshot = 
         getUsageMetrics(call.block.number, call.block.timestamp, call.from);
@@ -150,6 +180,8 @@ export function handleWithdrawETH(call: WithdrawETHCall): void {
 }
 
 export function handleRewardPaid(event: RewardPaid): void {
+  createProtocol();
+
   // Rewards do not to TVL, but adds to volume and supply side revenue
   let financialsDailySnapshot: FinancialsDailySnapshot = getFinancialSnapshot(
     event.block.timestamp,
@@ -164,4 +196,3 @@ export function handleRewardPaid(event: RewardPaid): void {
   financialsDailySnapshot.blockNumber = event.block.number;
   financialsDailySnapshot.save();
 }
-

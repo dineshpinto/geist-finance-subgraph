@@ -7,6 +7,9 @@ import {
 import { 
     ZERO_BI, 
     ONE_BI,
+} from "./constants"
+
+import { 
     PRICE_ORACLE,
     TOKEN_ADDRESS_GEIST,
     TOKEN_ADDRESS_gFTM,
@@ -27,9 +30,9 @@ import {
     TOKEN_ADDRESS_USDC,
     TOKEN_ADDRESS_BTC,
     TOKEN_ADDRESS_fUSDT
-} from "./constants"
+} from "../common/addresses"
 
-import { AaveOracle } from "../generated/MultiFeeDistribution/AaveOracle"
+import { AaveOracle } from "../../generated/MultiFeeDistribution/AaveOracle"
 
 export function exponentToBigDecimal(decimals: BigInt): BigDecimal {
     let bd = BigDecimal.fromString('1')
@@ -46,8 +49,6 @@ export function convertTokenToDecimal(tokenAmount: BigInt, decimals: BigInt): Bi
     return tokenAmount.toBigDecimal().div(exponentToBigDecimal(decimals))
   }
 
-// Hard code the prices in for testing
-// Replace with Price Oracle
 export function getTokenPrice(tokenAddress: Address) : BigInt {
     let priceOracle = AaveOracle.bind(PRICE_ORACLE);
 
@@ -65,7 +66,7 @@ export function getTokenPrice(tokenAddress: Address) : BigInt {
     }
     else if (tokenAddress == TOKEN_ADDRESS_GEIST) {
         // TODO: Fix this with value from an oracle
-        return BigInt.fromString("0.1");
+        return BigInt.fromString("0.15");
     }
     else if (tokenAddress == TOKEN_ADDRESS_gWBTC) {
         return priceOracle.getAssetPrice(TOKEN_ADDRESS_BTC);

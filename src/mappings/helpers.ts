@@ -4,7 +4,7 @@ import {
     BigDecimal
 } from '@graphprotocol/graph-ts'
 
-import { GeistToken as TokenContract } from "../generated/GeistToken/GeistToken"
+import { GeistToken as TokenContract } from "../../generated/GeistToken/GeistToken"
 
 import { 
     Token, 
@@ -12,21 +12,24 @@ import {
     UsageMetricsDailySnapshot, 
     UniqueUsers,
     FinancialsDailySnapshot,
-} from "../generated/schema"
+} from "../../generated/schema"
 
 import { 
+    ZERO_BD,
+    SECONDS_PER_DAY
+} from "../common/constants";
+
+import {
     TOKEN_NAME_GEIST, 
     TOKEN_DECIMALS_GEIST, 
     REWARD_TOKEN_NAME, 
     REWARD_TOKEN_DECIMALS, 
     REWARD_TOKEN_SYMBOL,
-    ZERO_BD,
-} from "./constants";
+} from "../common/addresses"
 
 import { 
-    convertTokenToDecimal,
     getTokenPrice
-} from "./utils";
+} from "../common/utils";
 
 export function getTokenInfo(address: Address): Token {
     let token = Token.load(address.toHexString());
@@ -79,7 +82,7 @@ export function getUsageMetrics(
     // Number of days since Unix epoch
     // Note: This is an unsafe cast to int, this should be handled better, 
     // perhaps some additional rounding logic
-    let id: i64 = timestamp.toI64() / 86400;
+    let id: i64 = timestamp.toI64() / SECONDS_PER_DAY;
   
     // Check if the id (i.e. the day) exists in the store
     let usageMetrics = UsageMetricsDailySnapshot.load(id.toString());
@@ -135,7 +138,7 @@ export function getUsageMetrics(
       isProtocolSideRevenue: bool
   ): FinancialsDailySnapshot {
 
-    let id: i64 = timestamp.toI64() / 86400;
+    let id: i64 = timestamp.toI64() / SECONDS_PER_DAY;
 
     // Refresh id daily, historical snapshots can be accessed by using the id
     let financialsDailySnapshot = FinancialsDailySnapshot.load(id.toString())
@@ -171,7 +174,6 @@ export function getUsageMetrics(
     }
     financialsDailySnapshot.totalVolumeUSD.plus(tokenAmountUSD);
     financialsDailySnapshot.timestamp = timestamp;
-    financialsDailySnapshot.protocol = TOKEN_NAME_GEIST;
 
     return financialsDailySnapshot;
   }

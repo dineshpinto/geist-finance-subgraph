@@ -30,7 +30,7 @@ dataSources:
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
-      file: ./src/mapping.ts
+      file: ./src/mappings/mapping.ts
   # --------------------------------------
   #      Borrowing/Lending
   # --------------------------------------     
@@ -60,7 +60,7 @@ dataSources:
           handler: handleRepayETH
         - function: borrowETH(address,uint256,uint256,uint16)
           handler: handleBorrowETH
-      file: ./src/mapping.ts
+      file: ./src/mappings/mapping.ts
   - kind: ethereum/contract
     name: MultiFeeDistribution
     network: fantom
@@ -82,4 +82,4 @@ dataSources:
       eventHandlers:
         - event: RewardPaid(indexed address,indexed address,uint256)
           handler: handleRewardPaid
-      file: ./src/mapping.ts
+      file: ./src/mappings/mapping.ts
