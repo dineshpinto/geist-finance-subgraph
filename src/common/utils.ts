@@ -29,10 +29,14 @@ import {
     TOKEN_ADDRESS_LINK,
     TOKEN_ADDRESS_USDC,
     TOKEN_ADDRESS_BTC,
-    TOKEN_ADDRESS_fUSDT
+    TOKEN_ADDRESS_fUSDT,
+    GEIST_FTM_LP_ADDRESS
 } from "../common/addresses"
 
 import { AaveOracle } from "../../generated/MultiFeeDistribution/AaveOracle"
+
+import { SpookySwapGEISTFTM } from "../../generated/MultiFeeDistribution/SpookySwapGEISTFTM"
+
 
 export function exponentToBigDecimal(decimals: BigInt): BigDecimal {
     let bd = BigDecimal.fromString('1')
@@ -40,19 +44,23 @@ export function exponentToBigDecimal(decimals: BigInt): BigDecimal {
       bd = bd.times(BigDecimal.fromString('10'))
     }
     return bd
-  }
+}
 
 export function convertTokenToDecimal(tokenAmount: BigInt, decimals: BigInt): BigDecimal {
+    /* Convert a BigInt tokenAmount to BigDecimal */
     if (decimals == ZERO_BI) {
       return tokenAmount.toBigDecimal()
     }
     return tokenAmount.toBigDecimal().div(exponentToBigDecimal(decimals))
-  }
+}
 
 export function getTokenPrice(tokenAddress: Address) : BigInt {
-    // The price oracle only supports a limited number of tokens
-    // So map the gTokens to the underlying asset for price
-    // 
+    /* 
+        The price oracle only supports a limited number of tokens
+        So map the gTokens to the underlying asset for price
+        eg. gUSDC -> USDC, gDAI -> DAI etc.
+    */
+
     let priceOracle = AaveOracle.bind(PRICE_ORACLE);
 
     if (tokenAddress == TOKEN_ADDRESS_gfUSDT) {
@@ -68,8 +76,20 @@ export function getTokenPrice(tokenAddress: Address) : BigInt {
         return priceOracle.getAssetPrice(TOKEN_ADDRESS_MIM);
     }
     else if (tokenAddress == TOKEN_ADDRESS_GEIST) {
-        // TODO: Fix this with value from a SpookySwap
-        return BigInt.fromString("0.15");
+        /* 
+            For the GEIST token, the price is derived from the
+            ratio of FTM-GEIST reserves on Spookyswap multiplied by
+            the price of WFTM from the oracle
+        */
+        let geistFtmLP = SpookySwapGEISTFTM.bind(GEIST_FTM_LP_ADDRESS);
+
+        let reserveFTM = geistFtmLP.getReserves().value0;
+        let reserveGEIST = geistFtmLP.getReserves().value1;
+
+        let priceGEISTinFTM = reserveFTM.div(reserveGEIST);
+
+        let priceFTMinUSD = priceOracle.getAssetPrice(TOKEN_ADDRESS_WFTM);        
+        return priceGEISTinFTM.times(priceFTMinUSD)
     }
     else if (tokenAddress == TOKEN_ADDRESS_gWBTC) {
         return priceOracle.getAssetPrice(TOKEN_ADDRESS_BTC);

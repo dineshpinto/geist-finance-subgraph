@@ -79,6 +79,8 @@ dataSources:
           file: ./abis/MultiFeeDistribution.json
         - name: AaveOracle
           file : ./abis/AaveOracle.json
+        - name: SpookySwapGEISTFTM
+          file: ./abis/SpookySwapGEISTFTM.json
       eventHandlers:
         - event: RewardPaid(indexed address,indexed address,uint256)
           handler: handleRewardPaid

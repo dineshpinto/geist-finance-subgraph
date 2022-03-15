@@ -45,3 +45,6 @@ export const TOKEN_ADDRESS_LINK = Address.fromString("0xb3654dc3D10Ea7645f831966
 
 // Aave price oracle
 export const PRICE_ORACLE = Address.fromString("0xC466e3FeE82C6bdc2E17f2eaF2c6F1E91AD10FD3");
+
+// GEIST-FTM LP on SpookySwap
+export const GEIST_FTM_LP_ADDRESS = Address.fromString("0x668AE94D0870230AC007a01B471D02b2c94DDcB9");

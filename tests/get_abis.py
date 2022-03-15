@@ -2,8 +2,8 @@ import requests
 import json
 import time
 
-# Deployment addresses for GEIST Finance
-deployments = {
+# Deployment addresses
+deployment_addresses = {
     "LendingPoolAddressesProviderRegistry": "0x4CF8E50A5ac16731FA2D8D9591E195A285eCaA82",
     "LendingPoolAddressProvider": "0x6c793c628Fe2b480c5e6FB7957dDa4b9291F9c9b",
     "LendingPool": "0x9FAD24f572045c7869117160A571B2e50b10d068",
@@ -15,16 +15,21 @@ deployments = {
     "WETHGateway": "0x47102245FEa0F8D35a6b28E54505e9FfD83d0704",
     "MultiFeeDistribution": "0x49c93a95dbcc9A6A4D8f77E59c038ce5020e82f8",
     "TimeLock": "0x7FB9a7cBc6689C1C79e37BF8f852adA44b10EfFC",
+    "SpookySwapGEISTFTM": "0x668AE94D0870230AC007a01B471D02b2c94DDcB9"
 }
 
-for name, address in deployments.items():
-    # Query ABIs from ftmscan.com
-    url = f"https://api.ftmscan.com/api?module=contract&action=getabi&address={address}&format=raw"
-    data = requests.get(url=url).json()
+if __name__ == "__main__":
+    """
+        Helper script to pull all relevant ABIs from FTMScan
+    """
+    for name, address in deployment_addresses.items():
+        # Query ABIs from ftmscan.com
+        url = f"https://api.ftmscan.com/api?module=contract&action=getabi&address={address}&format=raw"
+        data = requests.get(url=url).json()
 
-    # Write ABIs to file, make it look pretty too
-    with open(f'abis/{name}.json', 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-    
-    # Delay to prevent getting rate limited
-    time.sleep(5)
+        # Write ABIs to file, make it look pretty too
+        with open(f'../abis/{name}.json', 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        
+        # Delay to prevent getting rate limited
+        time.sleep(5)
