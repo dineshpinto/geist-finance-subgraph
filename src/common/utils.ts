@@ -63,16 +63,16 @@ export function getTokenPrice(tokenAddress: Address) : BigInt {
 
     let priceOracle = AaveOracle.bind(PRICE_ORACLE);
 
-    if (tokenAddress == TOKEN_ADDRESS_gfUSDT) {
+    if ((tokenAddress == TOKEN_ADDRESS_gfUSDT) || (tokenAddress == TOKEN_ADDRESS_fUSDT)) {
         return priceOracle.getAssetPrice(TOKEN_ADDRESS_fUSDT);
     }
-    else if (tokenAddress == TOKEN_ADDRESS_gUSDC) {
+    else if ((tokenAddress == TOKEN_ADDRESS_gUSDC) || (tokenAddress == TOKEN_ADDRESS_USDC)) {
         return priceOracle.getAssetPrice(TOKEN_ADDRESS_USDC);
     }
-    else if (tokenAddress == TOKEN_ADDRESS_gDAI) {
+    else if ((tokenAddress == TOKEN_ADDRESS_gDAI) || (tokenAddress == TOKEN_ADDRESS_DAI)) {
         return priceOracle.getAssetPrice(TOKEN_ADDRESS_DAI);
     }
-    else if (tokenAddress == TOKEN_ADDRESS_gMIM) {    
+    else if ((tokenAddress == TOKEN_ADDRESS_gMIM) || (tokenAddress == TOKEN_ADDRESS_MIM)) {    
         return priceOracle.getAssetPrice(TOKEN_ADDRESS_MIM);
     }
     else if (tokenAddress == TOKEN_ADDRESS_GEIST) {
@@ -91,19 +91,19 @@ export function getTokenPrice(tokenAddress: Address) : BigInt {
         let priceFTMinUSD = priceOracle.getAssetPrice(TOKEN_ADDRESS_WFTM);        
         return priceGEISTinFTM.times(priceFTMinUSD)
     }
-    else if (tokenAddress == TOKEN_ADDRESS_gWBTC) {
+    else if ((tokenAddress == TOKEN_ADDRESS_gWBTC) || (tokenAddress == TOKEN_ADDRESS_BTC)) {
         return priceOracle.getAssetPrice(TOKEN_ADDRESS_BTC);
     }
-    else if (tokenAddress == TOKEN_ADDRESS_gLINK) {
+    else if ((tokenAddress == TOKEN_ADDRESS_gLINK) || (tokenAddress == TOKEN_ADDRESS_LINK)) {
         return priceOracle.getAssetPrice(TOKEN_ADDRESS_LINK);
     }
-    else if (tokenAddress == TOKEN_ADDRESS_gCRV) {
+    else if ((tokenAddress == TOKEN_ADDRESS_gCRV) || (tokenAddress == TOKEN_ADDRESS_CRV)) {
         return priceOracle.getAssetPrice(TOKEN_ADDRESS_CRV);
     }
-    else if (tokenAddress == TOKEN_ADDRESS_gETH) {
+    else if ((tokenAddress == TOKEN_ADDRESS_gETH) || (tokenAddress == TOKEN_ADDRESS_ETH)) {
         return priceOracle.getAssetPrice(TOKEN_ADDRESS_ETH);
     }
-    else if (tokenAddress == TOKEN_ADDRESS_gFTM) {
+    else if ((tokenAddress == TOKEN_ADDRESS_gFTM) || (tokenAddress == TOKEN_ADDRESS_WFTM)) {
         return priceOracle.getAssetPrice(TOKEN_ADDRESS_WFTM);
     }
     else {
