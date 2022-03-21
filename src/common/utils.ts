@@ -3,6 +3,7 @@ import {
     BigDecimal, 
     Address,
     ethereum,
+    log
 } from "@graphprotocol/graph-ts";
 
 import { 
@@ -34,9 +35,13 @@ import {
     GEIST_FTM_LP_ADDRESS
 } from "../common/addresses"
 
-import { AaveOracle } from "../../generated/MultiFeeDistribution/AaveOracle"
+import { 
+    AaveOracle 
+} from "../../generated/AaveOracle/AaveOracle"
 
-import { SpookySwapGEISTFTM } from "../../generated/MultiFeeDistribution/SpookySwapGEISTFTM"
+import { 
+    SpookySwapGEISTFTM 
+} from "../../generated/SpookySwapGEISTFTM/SpookySwapGEISTFTM"
 
 
 export function exponentToBigDecimal(decimals: BigInt): BigDecimal {
@@ -61,6 +66,8 @@ export function getTokenPrice(tokenAddress: Address) : BigInt {
         So map the gTokens to the underlying asset for price
         eg. gUSDC -> USDC, gDAI -> DAI etc.
     */
+
+    log.warning('Getting price for {}', [tokenAddress.toHexString()])
 
     let priceOracle = AaveOracle.bind(PRICE_ORACLE);
 

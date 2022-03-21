@@ -25,8 +25,6 @@ dataSources:
       abis:
         - name: GeistToken
           file: ./abis/GeistToken.json
-        - name: MultiFeeDistribution
-          file: ./abis/MultiFeeDistribution.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -77,13 +75,49 @@ dataSources:
       abis:
         - name: MultiFeeDistribution
           file: ./abis/MultiFeeDistribution.json
-        - name: AaveOracle
-          file : ./abis/AaveOracle.json
-        - name: SpookySwapGEISTFTM
-          file: ./abis/SpookySwapGEISTFTM.json
       eventHandlers:
         - event: RewardPaid(indexed address,indexed address,uint256)
           handler: handleRewardPaid
+      file: ./src/mappings/mapping.ts
+  - kind: ethereum/contract
+    name: AaveOracle
+    network: fantom
+    source:
+      address: "0xC466e3FeE82C6bdc2E17f2eaF2c6F1E91AD10FD3"
+      startBlock: 33000000
+      abi: AaveOracle
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - FinancialsDailySnapshot
+      abis:
+        - name: AaveOracle
+          file : ./abis/AaveOracle.json
+      eventHandlers:
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+      file: ./src/mappings/mapping.ts
+  - kind: ethereum/contract
+    name: SpookySwapGEISTFTM
+    network: fantom
+    source:
+      address: "0xC466e3FeE82C6bdc2E17f2eaF2c6F1E91AD10FD3"
+      startBlock: 33000000
+      abi: SpookySwapGEISTFTM
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - FinancialsDailySnapshot
+      abis:
+        - name: SpookySwapGEISTFTM
+          file: ./abis/SpookySwapGEISTFTM.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
       file: ./src/mappings/mapping.ts
 
   # --------------------------------------
