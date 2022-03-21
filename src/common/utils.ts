@@ -113,14 +113,14 @@ export function getTokenPrice(tokenAddress: Address) : BigInt {
 }
 
 export function getTimeInMillis(time: BigInt): BigInt {
-return time.times(BigInt.fromI32(1000));
+    return time.times(BigInt.fromI32(1000));
 }
 
 export function getTimestampInMillis(block: ethereum.Block): BigInt {
-return block.timestamp.times(BigInt.fromI32(1000));
+    return block.timestamp.times(BigInt.fromI32(1000));
 }
 
 export function bigIntToPercentage(n: BigInt): BigDecimal {
-return n.toBigDecimal().div(BigDecimal.fromString("100"))
+    return n.toBigDecimal().div(BigDecimal.fromString("100"))
 }
   

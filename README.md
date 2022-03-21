@@ -9,8 +9,12 @@ The subgraph is live on The Graph Hosted Service [here](https://thegraph.com/hos
 ## Commands
 Generate code and build structures
 
-`graph codegen && graph build`
+```shell
+graph codegen && graph build
+```
 
 Authenticated deploy to The Graph hosted service
 
-`graph deploy --product hosted-service dineshpinto/geist-finance`
+```shell
+graph deploy --product hosted-service dineshpinto/geist-finance
+```

@@ -1,6 +1,10 @@
-import { BigInt, BigDecimal, Address, log } from "@graphprotocol/graph-ts"
+import { 
+  BigInt, BigDecimal, Address, log 
+} from "@graphprotocol/graph-ts"
 
-import { Approval } from "../../generated/GeistToken/GeistToken"
+import { 
+  Approval 
+} from "../../generated/GeistToken/GeistToken"
 
 import { 
   AddressesProviderRegistered,
@@ -119,6 +123,27 @@ export function handleDeposit(event: Deposit): void {
     transaction.protocol = PROTOCOL_ID
     transaction.save()
   }
+
+  // Generate data for the UsageMetricsDailySnapshot Entity
+  let usageMetrics: UsageMetricsDailySnapshotEntity = 
+        getUsageMetrics(event.block.number, event.block.timestamp, event.transaction.from);
+  usageMetrics.save()
+
+  // Depositing adds to TVL and volume
+  let financialsDailySnapshot: FinancialsDailySnapshotEntity = getFinancialSnapshot(
+    event.block.timestamp,
+    event.params.amount,
+    event.params.reserve,
+    true,
+    true,
+    false,
+    false
+  );
+
+  financialsDailySnapshot.protocol = PROTOCOL_ID;
+  financialsDailySnapshot.timestamp = event.block.timestamp;
+  financialsDailySnapshot.blockNumber = event.block.number;
+  financialsDailySnapshot.save()
 }
 
 export function handleApproval(event: Approval): void {
