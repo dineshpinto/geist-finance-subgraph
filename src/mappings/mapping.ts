@@ -28,13 +28,7 @@ import {
   RewardPaid
 } from "../../generated/MultiFeeDistribution/MultiFeeDistribution"
 
-import {
-  OwnershipTransferred
-} from "../../generated/AaveOracle/AaveOracle"
 
-import {
-  Transfer
-} from "../../generated/SpookySwapGEISTFTM/SpookySwapGEISTFTM"
 
 import { 
   DepositETHCall, 
@@ -394,11 +388,4 @@ export function handleRewardPaid(event: RewardPaid): void {
 
   // financialsDailySnapshot.blockNumber = event.block.number;
   // financialsDailySnapshot.save();
-}
-
-export function handleOwnershipTransferred(event: OwnershipTransferred): void {
-}
-
-export function handleTransfer(event: Transfer): void {
-
 }

@@ -98,12 +98,12 @@ dataSources:
       eventHandlers:
         - event: OwnershipTransferred(indexed address,indexed address)
           handler: handleOwnershipTransferred
-      file: ./src/mappings/mapping.ts
+      file: ./src/mappings/helpers.ts
   - kind: ethereum/contract
     name: SpookySwapGEISTFTM
     network: fantom
     source:
-      address: "0xC466e3FeE82C6bdc2E17f2eaF2c6F1E91AD10FD3"
+      address: "0x668AE94D0870230AC007a01B471D02b2c94DDcB9"
       startBlock: 33000000
       abi: SpookySwapGEISTFTM
     mapping:
@@ -118,7 +118,7 @@ dataSources:
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
-      file: ./src/mappings/mapping.ts
+      file: ./src/mappings/helpers.ts
 
   # --------------------------------------
   #           CONFIGURATIONS
